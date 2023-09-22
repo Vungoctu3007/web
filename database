@@ -1,0 +1,151 @@
+Phân tích thiết kế database
+1) Bảng Role
+    -id: int -> primary key - auto increment
+    -name: string (varchar) - 20 ký tự
+2) Bảng user
+    -id: int -> primary key - auto increment
+    -username: string (varchar) - 50 ký tự
+    -password: string -> md5 -> 32 ký tự -> chính xác
+    -fullname: string -> 50 ký tự
+    -email: string -> 150 ký tự - unique
+    -address: string -> 150 ky tu
+    -phone_number: string -> 20 ký tự
+    -role_id: int -> foreign key -> role (id)
+3) Bảng category
+    -id: int -> primary key - auto increment
+    -name: string -> 100 ký tự
+4) Bảng product
+    -id: int -> primary key - auto increment
+    -category_id: int -> foreign key - category(id)
+    -title: string -> 350 ký tự
+    -price: int
+    -discount: int
+    -description: longtext
+    -create_at: datetime -> tạo bản ghi
+    -updated_at: datetime -> sửa bản ghi
+5) Bảng quản lý galery
+    -id: int -> primary key - auto increment
+    -product_id -> int -> foreign key ->product (id)
+    -thumbnail -> string -> 500 ký tự
+6) Bảng quản lý phản hồi -> feedback
+    -id: int -> primary key - auto increment
+    -fullname: string -> 60 ký tự
+    -email: string -> 150 ký tự
+    -message: string -> 500 ký tự
+7) Quản lý đơn hàng
+    -id: int -> primary key - auto increment
+    -fullname
+    -email
+    -phone_number
+    -address
+    -note
+    -order_date: datetime -> thời điểm đặt hàng
+    -Danh sách sản phẩm:
+        -sản phẩm 1 x số lượng x giá thời điểm mua
+        -sản phẩm 2 x số lượng x giá thời điểm mua
+    7.1) Bảng order
+        -id: int -> primary key - auto increment
+        -fullname
+        -email
+        -phone_number
+        -address
+        -note
+        -order_date: datetime -> thời điểm đặt hàng
+        -status: int -> (pending, approved, ...)
+        -total_money -> int -> tổng tiền của đơn hàng
+    7.2) Bảng chi tiết đơn hàng
+        -id: int -> primary key - auto increment
+        -order_id -> int -> foreign key -> order (id)
+        -product_id -> int -> foreign key -> product(id)
+        -price -> int
+        -num -> int -> số lượng sản phẩm mua
+        -total_money -> tổng tiền (price*num)
+CREATE TABLE `User` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255),
+  `phone_number` varchar(255),
+  `address` varchar(255),
+  `role_id` int NOT NULL,
+  `created_at` datetime,
+  `updated_at` datetime,
+  `deleted` int
+);
+
+CREATE TABLE `Category` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL
+);
+
+CREATE TABLE `Product` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `category_id` int,
+  `title` varchar(255),
+  `price` int,
+  `discount` int,
+  `thumbnail` varchar(255),
+  `description` longtext,
+  `created_at` datetime,
+  `updated_at` datetime
+);
+
+CREATE TABLE `Product_detail` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `product_id` int,
+  `sizes` varchar(255),
+  `colors` varchar(255)
+);
+
+CREATE TABLE `Galery` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `product_id` int,
+  `thumbnail` varchar(255)
+);
+
+CREATE TABLE `FeedBack` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `fullname` varchar(255),
+  `email` varchar(255),
+  `message` varchar(255)
+);
+
+CREATE TABLE `Order` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `user_id` int,
+  `email` varchar(255),
+  `phone_number` varchar(255),
+  `address` varchar(255),
+  `note` varchar(255),
+  `order_date` datetime,
+  `status` int,
+  `total_money` int
+);
+
+CREATE TABLE `Order_Details` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `order_id` int,
+  `product_id` int,
+  `price` int,
+  `num` int,
+  `total_money` int
+);
+
+CREATE TABLE `Role` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255)
+);
+
+ALTER TABLE `User` ADD FOREIGN KEY (`role_id`) REFERENCES `Role` (`id`);
+
+ALTER TABLE `Product` ADD FOREIGN KEY (`category_id`) REFERENCES `Category` (`id`);
+
+ALTER TABLE `Order_Details` ADD FOREIGN KEY (`product_id`) REFERENCES `Product` (`id`);
+
+ALTER TABLE `Order_Details` ADD FOREIGN KEY (`order_id`) REFERENCES `Order` (`id`);
+
+ALTER TABLE `Galery` ADD FOREIGN KEY (`product_id`) REFERENCES `Product` (`id`);
+
+ALTER TABLE `Order` ADD FOREIGN KEY (`user_id`) REFERENCES `User` (`id`);
+
+ALTER TABLE `Product_detail` ADD FOREIGN KEY (`product_id`) REFERENCES `Product` (`id`);
